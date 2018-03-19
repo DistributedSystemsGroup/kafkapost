@@ -568,6 +568,7 @@ def router(message, kafka_producer):
             'missing_tags': list(measurement_metadata[measurement]['keep'] - values_names)
         }
         kafka_producer.produce('metrics_errors', json.dumps(error_message))
+        kafka_producer.flush()
         counters['errors'] += 1
         return True
 
