@@ -606,7 +606,7 @@ def flush_stats(time_interval):
     q = 'INSERT INTO kafkapost (timestamp, host, kafka_lag, messages_in_sec, inserts_sec, parse_errors_sec, avg_insert_time) VALUES (%s, %s, %s, %s, %s, %s, %s)'
     with conn:
         with conn.cursor() as cur:
-            cur.execute(q, timestamp, counters['total_lag'], counters['msg_in'] / time_interval, counters['inserts'] / time_interval, counters['errors'] / time_interval, sum(counters['insert_times']) / len(counters['insert_times']))
+            cur.execute(q, (timestamp, counters['total_lag'], counters['msg_in'] / time_interval, counters['inserts'] / time_interval, counters['errors'] / time_interval, sum(counters['insert_times']) / len(counters['insert_times'])))
     counters['inserts'] = 0
     counters['errors'] = 0
     counters['total_lag'] = 0
