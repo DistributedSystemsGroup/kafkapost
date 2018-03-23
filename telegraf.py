@@ -1,6 +1,8 @@
 import datetime
 import json
 import logging
+import time
+from timeit import default_timer as timer
 
 import psycopg2
 import psycopg2.sql
@@ -522,7 +524,10 @@ for m in measurement_metadata:
 
 counters = {
     'inserts': 0,
-    'errors': 0
+    'errors': 0,
+    'total_lag': 0,
+    'insert_times': [],
+    'msg_in': 0
 }
 
 
@@ -545,6 +550,7 @@ def unpack_telegraf_json_protocol(message):
 
 
 def router(message, kafka_producer):
+    counters['msg_in'] += 1
     try:
         measurement, timestamp, values = unpack_telegraf_json_protocol(message)
     except Exception as e:
@@ -568,7 +574,6 @@ def router(message, kafka_producer):
             'missing_tags': list(measurement_metadata[measurement]['keep'] - values_names)
         }
         kafka_producer.produce('metrics_errors', json.dumps(error_message))
-        kafka_producer.flush()
         counters['errors'] += 1
         return True
 
@@ -578,6 +583,7 @@ def router(message, kafka_producer):
 
 def insert(table, timestamp, values):
     values["timestamp"] = timestamp
+    time_start = timer()
     q = psycopg2.sql.SQL("INSERT INTO {} ({}) VALUES ({})").format(
         psycopg2.sql.Identifier(table),
         psycopg2.sql.SQL(', ').join(map(psycopg2.sql.Identifier, values.keys())),
@@ -591,7 +597,21 @@ def insert(table, timestamp, values):
                 log.error(e)
                 counters['errors'] += 1
                 return False
+    counters['insert_times'].append(timer() - time_start)
     return True
+
+
+def flush_stats(time_interval):
+    timestamp = time.time()
+    q = 'INSERT INTO kafkapost (timestamp, host, kafka_lag, messages_in_sec, inserts_sec, parse_errors_sec, avg_insert_time) VALUES (%s, %s, %s, %s, %s, %s, %s)'
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute(q, timestamp, counters['total_lag'], counters['msg_in'] / time_interval, counters['inserts'] / time_interval, counters['errors'] / time_interval, sum(counters['insert_times']) / len(counters['insert_times']))
+    counters['inserts'] = 0
+    counters['errors'] = 0
+    counters['total_lag'] = 0
+    counters['insert_times'] = []
+    counters['msg_in'] = 0
 
 #######################
 # CREATE TABLE diskio
