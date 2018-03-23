@@ -52,6 +52,7 @@ def main_loop(kafka_consumer, kafka_producer, router):
                     log.debug(' - partition {} lag {} ({})'.format(part.partition, lag, lag - previous_lag[part.partition]))
                     total_lag += lag
                     previous_lag[part.partition] = lag
+            counters['total_lag'] = total_lag
             flush_stats(now - last_flush)
             last_flush = now
         try:
