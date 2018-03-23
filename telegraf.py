@@ -1,7 +1,6 @@
 import datetime
 import json
 import logging
-import time
 from timeit import default_timer as timer
 
 import psycopg2
@@ -602,7 +601,7 @@ def insert(table, timestamp, values):
 
 
 def flush_stats(time_interval):
-    timestamp = time.time()
+    timestamp = datetime.datetime.now(datetime.timezone.utc)
     q = 'INSERT INTO kafkapost (timestamp, host, kafka_lag, messages_in_sec, inserts_sec, parse_errors_sec, avg_insert_time) VALUES (%s, %s, %s, %s, %s, %s, %s)'
     with conn:
         with conn.cursor() as cur:
