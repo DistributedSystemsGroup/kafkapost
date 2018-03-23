@@ -4,9 +4,9 @@ import json
 import logging
 import time
 
-from confluent_kafka import Consumer, KafkaError, TopicPartition, KafkaException, Producer
+from confluent_kafka import Consumer, KafkaError, KafkaException, Producer
 
-from telegraf import router as telegraf_router, counters
+from telegraf import router as telegraf_router, counters, flush_stats
 
 log = logging.getLogger(__name__)
 LOG_FORMAT = '%(asctime)-15s %(levelname)s %(processName)s:%(threadName)s->%(name)s: %(message)s'
@@ -35,8 +35,9 @@ def main_loop(kafka_consumer, kafka_producer, router):
         now = time.time()
         if now - last_flush >= FLUSH_INTERVAL:
             log.debug('After {:.02f} seconds, flushed {} points to postgres with {} errors'.format(now - last_flush, counters['inserts'], counters['errors']))
-            counters['inserts'] = counters['errors'] = 0
             kafka_consumer.commit()
+            kafka_producer.flush()
+            total_lag = 0
             my_positions = kafka_consumer.position(kafka_consumer.assignment())
             for part in my_positions:
                 try:
@@ -49,9 +50,10 @@ def main_loop(kafka_consumer, kafka_producer, router):
                 if part.offset > 0:
                     lag = high - part.offset
                     log.debug(' - partition {} lag {} ({})'.format(part.partition, lag, lag - previous_lag[part.partition]))
+                    total_lag += lag
                     previous_lag[part.partition] = lag
+            flush_stats(now - last_flush)
             last_flush = now
-
         try:
             msg = kafka_consumer.poll(timeout=0.2)
             if msg is None:
