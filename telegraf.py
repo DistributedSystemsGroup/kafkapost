@@ -639,10 +639,12 @@ def flush_stats(time_interval):
     counters['msg_in'] = 0
 
 
-def message_filter(measurement, values_names):
-    if measurement == 'swap' and 'in' in values_names and 'out' in values_names:
+def message_filter(measurement, values):
+    if measurement == 'swap' and 'in' in values and 'out' in values:
         return True
-    if measurement == 'net' and 'icmp_inaddrmaskreps' in values_names:
+    if measurement == 'net' and 'icmp_inaddrmaskreps' in values:
+        return True
+    if measurement == 'docker_container_cpu' and values['cpu'] != 'cpu-total':
         return True
     else:
         return False
