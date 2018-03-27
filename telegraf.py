@@ -378,14 +378,16 @@ measurement_metadata = {
             'tx_bytes',
             'rx_packets',
             'rx_bytes',
-            'tx_dropped'
+            'tx_dropped',
+            'com.docker.swarm.id'
         },
         'discard': {
             'container_id',
             'engine_host',
             'author',
             'maintainer',
-            'zoe_type'
+            'zoe_type',
+            'com.docker.swarm.id'
         }
     },
     'docker_container_blkio': {
