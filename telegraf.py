@@ -578,7 +578,7 @@ def router(message, kafka_producer):
         return False
 
     values_names = set(values.keys())
-    if message_filter(measurement, values_names):
+    if message_filter(measurement, values):
         return True
 
     values_to_insert = values_names & measurement_metadata[measurement]['keep']
