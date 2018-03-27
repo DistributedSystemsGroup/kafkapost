@@ -642,6 +642,8 @@ def flush_stats(time_interval):
 def message_filter(measurement, values_names):
     if measurement == 'swap' and 'in' in values_names and 'out' in values_names:
         return True
+    if measurement == 'net' and 'icmp_inaddrmaskreps' in values_names:
+        return True
     else:
         return False
 

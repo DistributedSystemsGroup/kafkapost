@@ -15,7 +15,6 @@ def message_handler(message):
     except ValueError:
         print('Error parsing message: {}'.format(message.value()))
 
-
     pprint(message)
 
 
@@ -70,7 +69,7 @@ def assign_cb(consumer, partitions):
 def main_process(brokers, topic_name: str):
     conf = {
         'bootstrap.servers': brokers,
-        'group.id': 'kafkapost',
+        'group.id': 'error_reader',
         'default.topic.config': {'auto.offset.reset': 'latest'},
         'auto.commit.enable': True,
         'api.version.request': True,
