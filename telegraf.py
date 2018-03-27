@@ -76,6 +76,8 @@ measurement_metadata = {
             'icmpmsg_outtype3',
             'icmpmsg_outtype5',
             'icmpmsg_outtype8',
+            'icmpmsg_outtype11',
+            'icmpmsg_intype11',
             'tcp_outrsts',
             'tcp_rtomin',
             'tcp_currestab',
@@ -573,6 +575,8 @@ def router(message, kafka_producer):
         }
         kafka_producer.produce('metrics_errors', json.dumps(error_message))
         counters['errors'] += 1
+        if len(error_message['unknown_tags']) > 0:
+            log.error('Error: {}'.format(error_message))
         return True
 
     values = {k: v for k, v in values.items() if k in values_to_insert}
