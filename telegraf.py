@@ -315,6 +315,7 @@ measurement_metadata = {
             'engine_host',
             'cpu',
             'author',
+            'maintainer',
             'container_version',
             'container_image',
             'zoe_deployment_name',
