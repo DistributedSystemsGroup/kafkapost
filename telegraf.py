@@ -342,7 +342,6 @@ measurement_metadata = {
             'usage_in_kernelmode',
             'throttling_periods',
             'usage_in_usermode',
-            'usage_percent',
             'throttling_throttled_time',
             'usage_system',
             'throttling_throttled_periods'
