@@ -573,10 +573,10 @@ def router(message, kafka_producer):
         counters['errors'] += 1
         return False
 
+    values_names = set(values.keys())
     if message_filter(measurement, values_names):
         return True
 
-    values_names = set(values.keys())
     values_to_insert = values_names & measurement_metadata[measurement]['keep']
     if values_to_insert != measurement_metadata[measurement]['keep']:
         error_message = {

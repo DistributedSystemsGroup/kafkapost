@@ -15,7 +15,7 @@ def message_handler(message):
     except ValueError:
         print('Error parsing message: {}'.format(message.value()))
 
-    pprint(message)
+    #pprint(message)
 
 
 def main_loop(kafka_consumer):
@@ -55,7 +55,7 @@ def main_loop(kafka_consumer):
         except Exception:
             print('Exception in main loop')
         print('ENTER to continue...')
-        sys.stdin.readline()
+        #sys.stdin.readline()
 
 
 def assign_cb(consumer_, partitions):
