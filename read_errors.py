@@ -4,7 +4,7 @@ import json
 from pprint import pprint
 import sys
 
-from confluent_kafka import Consumer, KafkaError, KafkaException
+from confluent_kafka import Consumer, KafkaError, KafkaException, OFFSET_END
 
 
 def message_handler(message):
@@ -15,7 +15,8 @@ def message_handler(message):
     except ValueError:
         print('Error parsing message: {}'.format(message.value()))
 
-    #pprint(message)
+
+    pprint(message)
 
 
 def main_loop(kafka_consumer):
@@ -55,20 +56,22 @@ def main_loop(kafka_consumer):
         except Exception:
             print('Exception in main loop')
         print('ENTER to continue...')
-        #sys.stdin.readline()
+        sys.stdin.readline()
 
 
-def assign_cb(consumer_, partitions):
+def assign_cb(consumer, partitions):
     print("Partitions reassigned: ")
     for part in partitions:
         print("  - {}".format(part.partition))
+        part.offset = OFFSET_END
+    consumer.commit()
 
 
 def main_process(brokers, topic_name: str):
     conf = {
         'bootstrap.servers': brokers,
         'group.id': 'kafkapost',
-        'default.topic.config': {'auto.offset.reset': 'smallest'},
+        'default.topic.config': {'auto.offset.reset': 'latest'},
         'auto.commit.enable': True,
         'api.version.request': True,
         'partition.assignment.strategy': 'roundrobin',

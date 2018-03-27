@@ -417,14 +417,16 @@ measurement_metadata = {
             'io_serviced_recursive_async',
             'container_id',
             'io_serviced_recursive_sync',
-            'io_service_bytes_recursive_total'
+            'io_service_bytes_recursive_total',
+            'com.docker.swarm.id'
         },
         'discard': {
             'author',
             'maintainer',
             'zoe_type',
             'engine_host',
-            'container_id'
+            'container_id',
+            'com.docker.swarm.id'
         }
     },
     'docker_container_mem': {
