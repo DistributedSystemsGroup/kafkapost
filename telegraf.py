@@ -363,6 +363,7 @@ measurement_metadata = {
             'zoe_service_name',
             'zoe_service_id',
             'zoe_deployment_name',
+            'maintainer',
             'author',
             'container_name',
             'network',
@@ -383,6 +384,7 @@ measurement_metadata = {
             'container_id',
             'engine_host',
             'author',
+            'maintainer',
             'zoe_type'
         }
     },
@@ -393,6 +395,7 @@ measurement_metadata = {
             'container_image',
             'container_version',
             'device',
+            'maintainer',
             'author',
             'zoe_type',
             'zoe_service_id',
@@ -416,6 +419,7 @@ measurement_metadata = {
         },
         'discard': {
             'author',
+            'maintainer',
             'zoe_type',
             'engine_host',
             'container_id'
@@ -426,6 +430,7 @@ measurement_metadata = {
             'active_file',
             'active_anon',
             'author',
+            'maintainer',
             'cache',
             'host',
             'engine_host',
@@ -475,6 +480,7 @@ measurement_metadata = {
         'discard': {
             'zoe_type',
             'author',
+            'maintainer',
             'engine_host',
             'inactive_anon',
             'total_pgpgin',
@@ -567,6 +573,9 @@ def router(message, kafka_producer):
         counters['errors'] += 1
         return False
 
+    if message_filter(measurement, values_names):
+        return True
+
     values_names = set(values.keys())
     values_to_insert = values_names & measurement_metadata[measurement]['keep']
     if values_to_insert != measurement_metadata[measurement]['keep']:
@@ -624,6 +633,13 @@ def flush_stats(time_interval):
     counters['total_lag'] = 0
     counters['insert_times'] = []
     counters['msg_in'] = 0
+
+
+def message_filter(measurement, values_names):
+    if measurement == 'swap' and 'in' in values_names and 'out' in values_names:
+        return True
+    else:
+        return False
 
 #######################
 # CREATE TABLE diskio
