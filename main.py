@@ -107,7 +107,7 @@ def main():
     logging.getLogger('requests').setLevel(logging.WARNING)
     logging.getLogger('urllib3').setLevel(logging.WARNING)
 
-    main_process('bf11:9092,bf12:9092,bf5:9092', 'telegraf_json', telegraf_router)
+    main_process('bf11:9092,bf5:9092', 'telegraf_json', telegraf_router)
 
 
 if __name__ == "__main__":
