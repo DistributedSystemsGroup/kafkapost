@@ -2,7 +2,7 @@
 
 import json
 from pprint import pprint
-import sys
+import time
 
 from confluent_kafka import Consumer, KafkaError, KafkaException, OFFSET_END
 
@@ -16,6 +16,7 @@ def message_handler(message):
         print('Error parsing message: {}'.format(message.value()))
 
     pprint(message)
+    time.sleep(4)
 
 
 def main_loop(kafka_consumer):
@@ -54,8 +55,6 @@ def main_loop(kafka_consumer):
             return
         except Exception:
             print('Exception in main loop')
-        print('ENTER to continue...')
-        sys.stdin.readline()
 
 
 def assign_cb(consumer, partitions):

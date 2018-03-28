@@ -646,6 +646,8 @@ def message_filter(measurement, values):
         return True
     if measurement == 'docker_container_cpu' and values['cpu'] != 'cpu-total':
         return True
+    if measurement == 'docker' and 'memory_total' in values:
+        return True
     else:
         return False
 
