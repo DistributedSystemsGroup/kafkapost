@@ -577,10 +577,6 @@ def router(message, kafka_producer):
         counters['errors'] += 1
         return False
 
-    values_names = set(values.keys())
-    if message_filter(measurement, values):
-        return True
-
     if 'docker' in measurement:
         if 'zoe_deployment_name' not in values:
             values['zoe_deployment_name'] = None
@@ -594,6 +590,10 @@ def router(message, kafka_producer):
             values['zoe_execution_name'] = None
         if 'zoe_service_name' not in values:
             values['zoe_service_name'] = None
+
+    values_names = set(values.keys())
+    if message_filter(measurement, values):
+        return True
 
     values_to_insert = values_names & measurement_metadata[measurement]['keep']
     if values_to_insert != measurement_metadata[measurement]['keep']:

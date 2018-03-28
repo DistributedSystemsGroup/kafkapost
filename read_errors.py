@@ -16,7 +16,7 @@ def message_handler(message):
         print('Error parsing message: {}'.format(message.value()))
 
     pprint(message)
-    time.sleep(4)
+    time.sleep(5)
 
 
 def main_loop(kafka_consumer):
